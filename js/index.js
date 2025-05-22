@@ -7,6 +7,10 @@ const postPage = document.querySelector("#post");
 const postContainer = document.querySelector("#post-container");
 const commentsContainer = document.querySelector("#comments-container");
 
+const commentForm = document.querySelector("#comment-form");
+const emailInput = document.querySelector("#email");
+const bodyInput = document.querySelector("#body");
+
 // Get Id From URL
 const urlSearchParams = new URLSearchParams(window.location.search)
 const postId = urlSearchParams.get("id")
@@ -68,10 +72,8 @@ async function getPost(id){
     console.log(dataComments)
 
     dataComments.map((comment) => {
-
-
+        createComment(comment);
     })
-
 }
 
 function createComment(comment){
@@ -85,8 +87,23 @@ function createComment(comment){
 
     div.appendChild(email);
     div.appendChild(commentBody);
-    
+
     commentsContainer.appendChild(div);
+}
+
+// Insert a comment
+async function postComment(comment) {
+  const response = await fetch(url, {
+    method: "POST",
+    body: comment,
+    headers: {
+      "Content-type": "application/json",
+    },
+  });
+
+  const data = await response.json();
+
+  createComment(data);
 }
 
 if(!postId){
@@ -96,6 +113,20 @@ if(!postId){
 } else{
 
     getPost(postId);
+
+    commentForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    let comment = {
+      email: emailInput.value,
+      body: bodyInput.value,
+    };
+
+    comment = JSON.stringify(comment);
+
+    postComment(comment);
+  });
+
 }
 
 
